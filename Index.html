@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap-grid.css">
+    <link rel="stylesheet" href="css/bootstrap-reboot.css">
+    <link rel="stylesheet" href="css/bootstrap-utilities.css">
+</head>
+<body>
+<div class="row">
+    <div class="col">
+    <div class="col-4 offset-4">
+
+        <label for="formFile" class="form-label">Select File</label>
+        <input class="form-control" type="file" id="formFile">
+    </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-6 offset-3">
+        <canvas id="canvas" height="1000px" width="1000px"/>
+    </div>
+</div>
+
+<script src="js/bootstrap.js"></script>
+<script>
+    const inputElement = document.getElementById("formFile");
+    inputElement.addEventListener("change", handleFiles, false);
+    function handleFiles() {
+        const fileList = this.files; /* now you can work with the file list */
+        if(fileList.length === 1){
+            let f  = fileList[0];
+            let reader = new FileReader();
+            // Closure to capture the file information.
+            reader.onload = (function(theFile) {
+                return function(e) {
+                    let canvas = document.getElementById('canvas');
+                    let ctx = canvas.getContext('2d');
+
+                    let data = e.target.result;
+                    // const view = new Int8Array(data);
+                    var x = 0;
+                    var y = 0;
+                    for (let i = 0; i < data.length; ) {
+                        x++;
+                        if(x >= 1000){
+                            x=0;
+                            y++;
+                        }
+                        let r = 100+data.charCodeAt(i);
+                        i++;
+                        let b = 100+data.charCodeAt(i);
+                        i++;
+                        let g = 100+data.charCodeAt(i);
+                        i++;
+                        ctx.fillStyle = "rgba("+r+","+b+","+g+","+(255/255)+")";
+                        ctx.fillRect( x, y, 1, 1 );
+
+                    }
+                };
+            })(f);
+
+            // Read in the image file as a data URL.
+            reader.readAsBinaryString(f);
+        }
+    }
+</script>
+</body>
+</html>
